@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Demo.SearchPortal.Home">
+<IncludeCode>%IFInclude</IncludeCode>
+<Super>%ZEN.Component.page</Super>
+<TimeCreated>63816,42293.579451</TimeCreated>
+
+<Parameter name="IFPTABLE">
+<Default>Demo_Hotels.Review</Default>
+</Parameter>
+
+<Parameter name="IFPINDEX">
+</Parameter>
+
+<Parameter name="IFPFILTERFIELDS">
+</Parameter>
+
+<Parameter name="IFPORDERFIELD">
+</Parameter>
+
+<Parameter name="IFPTITLEFIELD">
+</Parameter>
+
+<Parameter name="IFPORIGINALTEXTFIELD">
+</Parameter>
+
+<Parameter name="CSSINCLUDES">
+<Default>nglib/bootstrap/css/bootstrap.min.css,nglib/bootstrap/css/bootstrap-theme.min.css</Default>
+</Parameter>
+
+<Parameter name="JSINCLUDES">
+<Default>nglib/jquery-1.9.0.min.js,nglib/bootstrap/js/bootstrap.min.js</Default>
+</Parameter>
+
+<Property name="tableName">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>..#IFPTABLE</InitialExpression>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="t"/>
+</Property>
+
+<Property name="className">
+<Type>%ZEN.Datatype.string</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="mappingPrefix">
+<Type>%ZEN.Datatype.string</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="hasPrivateStorage">
+<Type>%ZEN.Datatype.boolean</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="indexName">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>..#IFPINDEX</InitialExpression>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="i"/>
+</Property>
+
+<Property name="metadataColumns">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>..#IFPFILTERFIELDS</InitialExpression>
+<Parameter name="MAXLEN" value="2000"/>
+<Parameter name="ZENURL" value="mf"/>
+</Property>
+
+<Property name="orderField">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>..#IFPORDERFIELD</InitialExpression>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="of"/>
+</Property>
+
+<Property name="titleField">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>..#IFPTITLEFIELD</InitialExpression>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="tf"/>
+</Property>
+
+<Property name="originalTextField">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>..#IFPORIGINALTEXTFIELD</InitialExpression>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="otf"/>
+</Property>
+
+<Property name="metadataParsed">
+<Type>%ZEN.Datatype.string</Type>
+<Private>1</Private>
+<Parameter name="MAXLEN" value="2000"/>
+</Property>
+
+<Property name="metadata1Index">
+<Type>%ZEN.Datatype.string</Type>
+<Private>1</Private>
+<Parameter name="MAXLEN" value="256"/>
+</Property>
+
+<Property name="searchString">
+<Type>%ZEN.Datatype.string</Type>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="q"/>
+</Property>
+
+<Property name="searchMode">
+<Type>%ZEN.Datatype.string</Type>
+<InitialExpression>$$$IFSEARCHNORMAL</InitialExpression>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="m"/>
+</Property>
+
+<Property name="searchMD1">
+<Type>%ZEN.Datatype.string</Type>
+<Parameter name="MAXLEN" value="256"/>
+<Parameter name="ZENURL" value="j"/>
+</Property>
+
+<Property name="qid">
+<Type>%ZEN.Datatype.integer</Type>
+<Parameter name="ZENURL" value="qid"/>
+</Property>
+
+<Property name="criteria">
+<Type>%ZEN.Datatype.string</Type>
+<Parameter name="MAXLEN"/>
+<Parameter name="ZENURL" value="c"/>
+</Property>
+
+<XData name="Style">
+<Data><![CDATA[
+<style type="text/css">
+body {
+	padding: 20px;
+}
+
+.searchMatch, .searchMatchNeg {
+	font-weight: bold;
+	background-color: Gold;
+}
+
+.textFragment {
+	color: #555;
+	font-style: italic;
+}
+
+.publishingDate {
+	color: #5cb85c;
+}
+</style>
+]]></Data>
+</XData>
+
+<XData name="Contents">
+<XMLNamespace>http://www.intersystems.com/zen</XMLNamespace>
+<Data><![CDATA[
+<page title="iFind Search Portal" width="100%">
+<hgroup cellVAlign="top" width="100%">
+<vgroup width="70%">
+<hgroup>
+<assistedText id="txtSearch" controlWidth="350px" controlClass="form-control"
+controlType="custom"  isSuggestedDataComplete="true" triggerChars="" hideGhost="true" 
+	onUpdateDataClient="zenPage.inputTermClient(base)"
+  	onchange="zenPage.search(zenThis.getValue(),zen('selMD1').getValue());return;" 
+ 	onkeyup="zenPage.onTermKeyUp();return;" />
+ <spacer width="15" />
+ <select id="selMD1" controlClass="form-control" controlStyle="width:100px;"
+ sql="SELECT DISTINCT %EXACT($$$MD1) FROM $$$TABLE"
+ onchange="zenPage.search(zen('txtSearch').getValue(),zenThis.getValue());" />
+ <spacer width="15" />
+<button id="btnSearch" caption="Search!" controlClass="btn btn-primary"
+onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" />
+</hgroup>
+<spacer height="15" />
+<html id="htmlResults" OnDrawContent="DrawResults" />
+</vgroup>
+<spacer width="15" />
+<vgroup width="30%">
+<!--titleBox title="Filter facet" /-->
+<html id="htmlFilterFacet" OnDrawContent="DrawFacet" seed="$$$MD1" />
+<spacer height="15" />
+
+<!--titleBox title="Dominant terms" /-->
+<html id="htmlDominantTerms" OnDrawContent="DrawDominantTerms" />
+<spacer height="15" />
+
+<!--titleBox title="Similar terms" /-->
+<html id="htmlSimilarTerms" OnDrawContent="DrawSimilarTerms" />
+<spacer height="15" />
+
+<!--titleBox title="Related terms" /-->
+<html id="htmlRelatedTerms" OnDrawContent="DrawRelatedTerms" />
+</vgroup>
+</hgroup>
+
+<html id="htmlResultDoc" OnDrawContent="DrawDocument" />
+</page>
+]]></Data>
+</XData>
+
+<Method name="selectDocument">
+<FormalSpec>id</FormalSpec>
+<Language>javascript</Language>
+<ClientMethod>1</ClientMethod>
+<Implementation><![CDATA[
+	var html = zen('htmlResultDoc');
+	var sc = html.setProperty('seed', id);
+	sc = html.refreshContents(true);
+	$('#docModal').modal();
+]]></Implementation>
+</Method>
+
+<Method name="search">
+<FormalSpec>string,md1</FormalSpec>
+<Language>javascript</Language>
+<ClientMethod>1</ClientMethod>
+<Implementation><![CDATA[
+	// first ensure we have our saved results
+	sc = zenPage.DoSearch(string, md1);
+	zenPage.refreshAll();
+]]></Implementation>
+</Method>
+
+<Method name="refine">
+<FormalSpec>criteria</FormalSpec>
+<Language>javascript</Language>
+<ClientMethod>1</ClientMethod>
+<Implementation><![CDATA[
+	var sc = zenPage.RefineSearch(criteria);
+	zenPage.refreshAll();
+]]></Implementation>
+</Method>
+
+<Method name="refreshAll">
+<Language>javascript</Language>
+<ClientMethod>1</ClientMethod>
+<Implementation><![CDATA[
+	// asynchronously refresh relevant panels
+	zen('htmlResults').refreshContents();
+	zen('htmlFilterFacet').refreshContents();
+	zen('htmlDominantTerms').refreshContents();
+	zen('htmlSimilarTerms').refreshContents();
+	zen('htmlRelatedTerms').refreshContents();
+]]></Implementation>
+</Method>
+
+<Method name="RefineSearch">
+<FormalSpec>pNewCriteria:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<ZenMethod>1</ZenMethod>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		set ..criteria = ..criteria _$s(..criteria="":"",1:",")_pNewCriteria
+		
+		set tType = $piece(pNewCriteria,":",1)
+		if tType="prop" {
+			set tSQL = "SELECT ID FROM "_..tableName_" WHERE "_$piece(pNewCriteria,":",2)_" = '"_$piece(pNewCriteria,":",3)_"' AND %ID %FIND Demo_SearchPortal.Find("_..qid_")"
+			set tResult = ##class(%SQL.Statement).%ExecDirect(,tSQL)
+			while tResult.%Next() {
+				set tID = tResult.%GetData(1)
+				$$$IFBITOFFPOS(tID,tChunk,tPos)
+				set $bit(tBits(tChunk),tPos)=1
+			}
+			// compress bitmaps
+			set tMaxChunk=$order(tBits(""),-1)
+			for tChunk = 1:1:tMaxChunk {
+				set tBits(tChunk) = $bitlogic(tBits(tChunk))
+			}
+		} else {
+			set tFinder = $classmethod(..className, ..indexName_"Embedded")
+			if (tType = "entity") {
+				do tFinder.PrepareFind("{"_$piece(pNewCriteria,":",2)_"}", ..searchMode)
+			} elseif (tType = "word") {
+				do tFinder.PrepareFind($piece(pNewCriteria,":",2), ..searchMode)
+			}
+			merge tOldBits = ^CacheTemp.IF.SearchPortal.Query(..qid,"b")
+			set tChunk=""
+			for {
+				set tBits = tFinder.NextChunk(.tChunk)
+				quit:tChunk=""
+				set tBits(tChunk)=$bitlogic(tBits & tOldBits(tChunk))
+			}
+		}
+		
+		set tNewQID = $i(^CacheTemp.IF.SearchPortal.Query)
+		merge ^CacheTemp.IF.SearchPortal.Query(tNewQID,"b") = tBits
+		set ^CacheTemp.IF.SearchPortal.Query(tNewQID, "parent") = ..qid
+		set ..qid = tNewQID
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DoSearch">
+<FormalSpec>pSearch:%String,pMD1:%String=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<ZenMethod>1</ZenMethod>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		if (..searchString'=pSearch) && ..qid {
+			job ..ClearHistory(..qid)
+		}
+		
+		set ..criteria = "", ..searchString = pSearch, ..searchMD1 = pMD1
+		
+		set tSearchMode = ..searchMode
+		set tFinder = $classmethod(..className, ..indexName_"Embedded")
+		do tFinder.PrepareFind(pSearch, tSearchMode)
+		
+		// fetch bitmap for MD1 field
+		if ..metadata1Index'="" {
+			merge tMD1Bits = @..metadata1Index@(" "_$$$UPPER(pMD1))
+		} else {
+			set tResult = ##class(%SQL.Statement).%ExecDirect(,"SELECT %ID FROM "_..tableName_" WHERE "_$piece(..metadataParsed,",",1)_" = '"_pMD1_"'")
+			while tResult.%Next() {
+				$$$IFBITOFFPOS(tResult.%GetData(1),tChunk,tPos)
+				set $bit(tMD1Bits(tChunk),tPos)=1
+			}
+		}
+		
+		set tQID = $i(^CacheTemp.IF.SearchPortal.Query)
+		
+		set tChunk=""
+		for {
+			set tBits = tFinder.NextChunk(.tChunk)
+			quit:tChunk=""
+			
+			set:pMD1'="" tBits = $bitlogic(tBits & tMD1Bits(tChunk))
+			
+			set ^CacheTemp.IF.SearchPortal.Query(tQID,"b",tChunk)=tBits
+		}
+		set ..qid = tQID
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DrawResults">
+<FormalSpec>pSeed:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		
+		set tSearchString = ..searchString
+		set tSearchMode = ..searchMode
+		set tHighlightTags = "<font class=""searchMatch"">,<font class=""searchMatchNeg"">"
+		set tLimit = 5
+		
+		write !,"<p>Searching for <i>",tSearchString,"</i>"
+		write:..searchMD1'="" " in '",..searchMD1,"'"
+		if ..criteria'="" {
+			write " filtered by ",..criteria
+		}
+		write " <span class=""hidden"">"_..qid_"</span></p>"
+		
+		set tSQL = "SELECT ID, "
+		#define QuoteIfReserved(%w) $s($system.SQL.IsReservedWord(%w):$$$QUOTE(%w), 1:%w)
+		if ..metadataParsed'="" {
+			for i = 1:1:$l(..metadataParsed," ") {
+				set tField = $piece(..metadataParsed,",",i)
+				set tSQL = tSQL _ $$$QuoteIfReserved(tField) _ " , "
+			}
+		}
+		set:tSQL'[..orderField tSQL = tSQL_$$$QuoteIfReserved(..orderField)_" , "
+		set:tSQL'[..titleField tSQL = tSQL_$$$QuoteIfReserved(..titleField)_" , "
+		set tSQL = tSQL _..tableName_"_"_..indexName_"Highlight(ID, '"_tSearchString_"', '"_tSearchMode_"', '"_tHighlightTags_"', "_tLimit_") Text, "
+		set tSQL = tSQL _..tableName_"_"_..indexName_"Rank(ID, '"_tSearchString_"', '"_tSearchMode_"') Rank "
+		set tSQL = tSQL_"FROM "_..tableName_" WHERE %ID %FIND Demo_SearchPortal.Find("_..qid_") ORDER BY "_$$$QuoteIfReserved(..orderField)_" DESC, Rank DESC"
+		
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare(tSQL)
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute()
+		
+		write !,"<table class=""table table-hover"">"
+		
+		while tResult.%Next() {
+			write !,"<tr style=""cursor:pointer;"" onclick=""zenPage.selectDocument(",tResult.%Get("ID"),");"">"
+			write !,"<td><a href=""zenPage.selectDocument(",tResult.%Get("ID"),");"" target=""_new"">",tResult.%Get("ID"),"</a></td>"
+			write !,"<td>"
+			
+			set tTitle = tResult.%Get(..titleField)
+			set:tTitle="" tTitle = "<i>untitled</i>"
+			write !,"<p>", /*tResult.%Get("Year")," - ",tResult.%Get("Issue")," - ","<b>", */ tTitle,"</b>"
+			// rather arbitrary score tresholds for now
+			set tRank = tResult.%Get("Rank")
+			write !,"<span style=""width:20px;"">&nbsp</span>"
+			write:tRank>0 "<span class=""glyphicon glyphicon-star"" aria-hidden=""true""></span>"
+			write:tRank>0.0001 "<span class=""glyphicon glyphicon-star"" aria-hidden=""true""></span>"
+			write:tRank>0.0005 "<span class=""glyphicon glyphicon-star"" aria-hidden=""true""></span>"
+			write:tRank>0.001 "<span class=""glyphicon glyphicon-star"" aria-hidden=""true""></span>"
+			write:tRank>0.01 "<span class=""glyphicon glyphicon-star"" aria-hidden=""true""></span>"
+			
+			set tDate = tResult.%Get(..orderField)
+			write !,"<br/><span class=""textFragment"">",tResult.%Get("Text"),"</span> - <span class=""publishingDate"">",tDate,"</span></p>"
+		
+			write !,"</td>"
+			write !,"</tr>"
+		}
+		write !,"</table>"
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="InputTerm">
+<FormalSpec>pBase:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<ZenMethod>1</ZenMethod>
+<Implementation><![CDATA[
+	set tFindPrefix = $s(..hasPrivateStorage:..mappingPrefix, 1:"%iFind.")
+	set tResult = ##class(%SQL.Statement).%ExecDirect(,"SELECT TOP 12 Entity FROM "_tFindPrefix_"FindEntities('"_pBase_"*', '"_..searchMode_"')") // WHERE EntityId IN (SELECT EntityId FROM poc_cIndexDocument.cIndexDocument_IdxIFind_EntSpreadRec)")
+	set tResultString = ""
+	while tResult.%Next() {
+		set tResultString = tResultString_","_tResult.%GetData(1)
+	}
+	quit tResultString
+]]></Implementation>
+</Method>
+
+<Method name="inputTermClient">
+<FormalSpec>text</FormalSpec>
+<Language>javascript</Language>
+<ClientMethod>1</ClientMethod>
+<Implementation><![CDATA[
+	// quit if input string is too short
+	if ((text == null) || (text.length < 2))
+		return '';
+		
+	return zenPage.InputTerm(text);
+]]></Implementation>
+</Method>
+
+<Method name="onTermKeyUp">
+<Language>javascript</Language>
+<ClientMethod>1</ClientMethod>
+<Implementation><![CDATA[
+	if (zenEvent && ((zenEvent.keyCode==13) || (zenEvent.which==13))) {
+		zenPage.search(zen('txtSearch').getValue());
+	}
+	return true;
+]]></Implementation>
+</Method>
+
+<Method name="DrawFacet">
+<FormalSpec>pSeed:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		set tSQL = "SELECT %EXACT("_pSeed_"), COUNT(*) FROM "_..tableName_" WHERE %ID %FIND Demo_SearchPortal.Find("_..qid_") GROUP BY %EXACT("_pSeed_")"
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare(tSQL)
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute()
+		
+		write !,"<div class=""panel panel-default"">"
+		write !,"<div class=""panel-heading""><h4>Filter by "_pSeed_"</h4></div>"
+		write !,"<table class=""table table-hover"">"
+		//write !,"<tr><th>"_pSeed_"</th><th>Count</th></tr>"
+		
+		while tResult.%Next() {
+			write !,"<tr>"
+			write !,"<td><a href=""javascript:zenPage.refine('prop:",pSeed,":",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",tResult.%GetData(2),"</td>"
+			write !,"</tr>"
+		}
+		write !,"</table>"
+		write !,"</div>"
+		
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DrawDominantTerms">
+<FormalSpec>pSeed:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		// take TOP 30 as the limit on StrippedEntityId=EntityId may halve (or worse) the list
+		set tSQL = "SELECT TOP 30 EntId, SUM(conceptValue) Dom FROM "_..mappingPrefix_"Dom WHERE RecId %FIND Demo_SearchPortal.Find("_..qid_") GROUP BY EntId ORDER BY 2 DESC"
+		set tSQL = "SELECT TOP 12 EntId->Value, Dom FROM ("_tSQL_") WHERE EntId->EntityId = EntId->StrippedEntityId"
+
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare(tSQL)
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute()
+		
+		write !,"<div class=""panel panel-default"">"
+		write !,"<div class=""panel-heading""><h4>Dominant concepts</h4></div>"
+		write !,"<table class=""table table-hover"">"
+		//write !,"<tr><th>Entity</th><th>Score</th></tr>"
+		
+		while tResult.%Next() {
+			write !,"<tr>"
+			write !,"<td><a href=""javascript:zenPage.refine('entity:",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",tResult.%GetData(2),"</td>"
+			write !,"</tr>"
+		}
+		write !,"</table>"
+		write !,"</div>"
+		
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DrawSimilarTerms">
+<FormalSpec>pSeed:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		set tFindPrefix = $s(..hasPrivateStorage:..mappingPrefix, 1:"%iFind.")
+		set tSQL = "SELECT TOP 12 e.Entity, COUNT(s.RecId) Spread FROM "_tFindPrefix_"FindEntities(?, ?) e JOIN "_..mappingPrefix_"EntSpreadRec s ON e.EntityId = s.EntityId WHERE RecId %FIND Demo_SearchPortal.Find("_..qid_") GROUP BY Entity ORDER BY Spread DESC"
+ 
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare(tSQL)
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute(..searchString, ..searchMode)
+		
+		write !,"<div class=""panel panel-default"">"
+		write !,"<div class=""panel-heading""><h4>Similar concepts</h4></div>"
+		write !,"<table class=""table table-hover"">"
+		//write !,"<tr><th>Entity</th><th>Score</th></tr>"
+		
+		while tResult.%Next() {
+			write !,"<tr>"
+			write !,"<td><a href=""javascript:zenPage.refine('entity:",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",tResult.%GetData(2),"</td>"
+			write !,"</tr>"
+		}
+		write !,"</table>"
+		write !,"</div>"
+		
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DrawRelatedTerms">
+<FormalSpec>pSeed:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		set tFindPrefix = $s(..hasPrivateStorage:..mappingPrefix, 1:"%iFind.")
+		set tSQL = "SELECT TOP 30 TargetId, SUM(Value) Prox FROM "_..mappingPrefix_"Prox WHERE RecId %FIND Demo_SearchPortal.Find(?) AND OriginId IN (SELECT EntityId FROM "_tFindPrefix_"FindEntities(?,?)) GROUP BY TargetId ORDER BY Prox DESC"
+		set tSQL = "SELECT TOP 12 TargetId->Value, Prox FROM ("_tSQL_") WHERE TargetId->EntityId = TargetId->StrippedEntityId"
+		
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare(tSQL)
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute(..qid, ..searchString, ..searchMode)
+		
+		write !,"<div class=""panel panel-default"">"
+		write !,"<div class=""panel-heading""><h4>Related concepts</h4></div>"
+		write !,"<table class=""table table-hover"">"
+		//write !,"<tr><th>Entity</th><th>Score</th></tr>"
+		
+		while tResult.%Next() {
+			write !,"<tr>"
+			write !,"<td><a href=""javascript:zenPage.refine('entity:",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",tResult.%GetData(2),"</td>"
+			write !,"</tr>"
+		}
+		write !,"</table>"
+		write !,"</div>"
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="%OnAfterCreatePage">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = ..InitializeTable()
+	quit:$$$ISERR(tSC) tSC
+	
+	if (..searchString'="") {
+		set ..%GetComponentById("txtSearch").value = ..searchString
+		do ..DoSearch(..searchString, ..searchMD1)
+	}
+	quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="InitializeTable">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		// first find table
+		if '$system.SQL.TableExists(..tableName, .tMetadata) {
+			set tSC = $$$ERROR($$$TableDoesNotExist, ..tableName)
+			quit
+		}
+		set ..className = $lg(tMetadata,3)
+		set tClassDef = ##class(%Dictionary.CompiledClass).%OpenId(..className)
+		
+		// then find and validate index
+		if (..indexName'="") {
+			set tIndexDef = ##class(%Dictionary.CompiledIndex).%OpenId(..className_"||"_..indexName)
+			if '$isobject(tIndexDef) {
+				set tSC = $$$ERROR($$$GeneralError, "No index '"_..indexName_"' on table '"_..tableName_"'")
+				quit
+			} elseif (tIndexDef.TypeClass="") || '$classmethod(tIndexDef.TypeClass,"%IsA","%iFind.Index.Analytic") {
+				set tSC = $$$ERROR($$$GeneralError, "Index '"_..indexName_"' on table '"_..tableName_"' is not an analytic one")
+				quit
+			}
+		} else {
+			set tIndexDef = ""
+			for i = 1:1:tClassDef.Indices.Count() {
+				set tIndexType = tClassDef.Indices.GetAt(i).TypeClass
+				continue:tIndexType=""
+				continue:'$classmethod(tIndexType,"%IsA","%iFind.Index.Analytic")
+				set tIndexDef = tClassDef.Indices.GetAt(i), ..indexName = tIndexDef.Name
+				quit
+			}
+		}
+		if '$isobject(tIndexDef) {
+			set tSC = $$$ERROR($$$GeneralError, "No Analytic iFind index on table '"_..tableName_"'")
+			quit
+		}
+		if ('tIndexDef.Parameters.GetAt("IFINDMAPPINGS")) && ('tIndexDef.Parameters.GetAt("IFINDADVANCED")) {
+			set tSC = $$$ERROR($$$GeneralError, "iFind index should have mappings enabled (IFINDMAPPINGS=1)")
+			quit
+		}
+		set tPrefix = tIndexDef.Parameters.GetAt("IFINDADVANCEDSQLPREFIX")
+		if (tPrefix = "") {
+			set ..mappingPrefix = $tr(..tableName,".","_")_"."_$piece(..tableName,".",*)_"_"_..indexName_"_"
+		} else {
+			set ..mappingPrefix = $tr(..tableName,".","_")_"."_tPrefix
+		}
+		set ..hasPrivateStorage = (tIndexDef.Parameters.GetAt("IFINDSHAREDDATALOCATION")'="")&&(tIndexDef.Parameters.GetAt("IFINDSHAREDDATALOCATION")'="NAMESPACE")
+		
+		// parse columns explicitly supplied through mf URL param
+		set tMDCount = $l(..metadataColumns,","), tMetadata=0
+		for i = 1:1:tMDCount {
+			set tColName = $zstrip($piece(..metadataColumns,",",i),"<>W")
+			continue:tColName=""
+			set tMetadata($i(tMetadata)) = tColName
+			set tMetadataI(tColName) = tMetadata
+		}
+		
+		// append all fields with simple bitmap index
+		for i = 1:1:tClassDef.Indices.Count() {
+			set tIndexDef = tClassDef.Indices.GetAt(i)
+			continue:(tIndexDef.Type'="bitmap")&&(tIndexDef.Type'="bitslice")
+			continue:tIndexDef.Extent
+			
+			set tIndexProps = tIndexDef.Properties
+			continue:tIndexProps["," // skip complex ones
+			set tIndexProps = $piece(tIndexProps,"(",1) // list indices
+			
+			if '$d(tMetadataI(tIndexProps)) {
+				set tMetadata($i(tMetadata)) = tIndexProps
+				set tMetadataI(tIndexProps) = tMetadata
+			}
+			
+			// track index location to cheat in DoSearch()
+			if (tMetadata=1)||(tIndexProps=$g(tMetadata(1))) {
+				continue:tClassDef.Storages.Count()>1
+				#dim tStorageDef as %Dictionary.CompiledStorage = tClassDef.Storages.GetAt(1)
+				continue:tStorageDef.Type'="%Library.CacheStorage"
+				for j=1:1:tStorageDef.Indices.Count() {
+					continue:tStorageDef.Indices.GetAt(j).Name'=tIndexDef.Name
+					set ..metadata1Index = tStorageDef.Indices.GetAt(j).Location
+					quit
+				}
+				continue:..metadata1Index'=""
+				set ..metadata1Index = $s($e(tStorageDef.IndexLocation,*)=")":$e(tStorageDef.IndexLocation,1,*-1)_",", 1:tStorageDef.IndexLocation_"(")_$$$QUOTE(tIndexDef.Name)_")"
+			}
+		}
+		
+		// now fetch corresponding SqlFieldNames
+		for i = 1:1:tMetadata {
+			set tColDef = ##class(%Dictionary.CompiledProperty).%OpenId(..className_"||"_tMetadata(i))
+			set:tColDef.SqlFieldName'="" tMetadata(i) = tColDef.SqlFieldName
+			set ..metadataParsed = ..metadataParsed_$s(i=1:"",1:",")_tMetadata(i)
+		}
+		
+		// retrieve title and order fields
+		for i = 1:1:tClassDef.Properties.Count() {
+			set tColDef = tClassDef.Properties.GetAt(i)
+			if ((..titleField="") && ($$$UPPER(tColDef.Name)["TITLE")) || ($$$UPPER(tColDef.Name)="TITLE") {
+				set ..titleField = tColDef.Name
+			}
+			if ((..orderField="") && (($$$UPPER(tColDef.Name)["DATE") || ($$$UPPER(tColDef.Type)["DATE"))) {
+				set ..orderField = tColDef.Name
+			}
+		}
+		set:..titleField="" ..titleField = "ID"
+		set:..orderField="" ..orderField = "ID"
+		
+		// now update all code referring to the table and/or index name
+		set tSelType = ..%GetComponentById("selMD1")
+		if (tMetadata) {
+			set tSelType.sql = $replace(tSelType.sql,"$$$TABLE",..tableName)
+			set tSelType.sql = $replace(tSelType.sql,"$$$MD1",tMetadata(1))
+			set tSelType.title = $tr(tMetadata(1),"_"," ")
+		} else {
+			set tSelType.hidden = 1
+		}
+		
+		if (tMetadata) {
+			set ..%GetComponentById("htmlFilterFacet").seed = tMetadata(1)
+		} else {
+			set ..%GetComponentById("htmlFilterFacet").hidden = 1
+		}
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="DrawDocument">
+<FormalSpec>pSeed:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		quit:'pSeed
+		
+		set tHighlightTags = "<a class=""searchMatch"" name=""firsthit"">,<a class=""searchMatchNeg"" name=""firsthit"">"
+		set tObj = $classmethod(..className, "%OpenId", pSeed)
+		set tTitle = $property(tObj, ..titleField)
+		
+		if (..originalTextField'="") {
+			set tLongString = $property(tObj, ..originalTextField)
+		
+			// now isolate <body> contents
+			set tLongString = $e(tLongString,$find(tLongString,">",$find(tLongString,"<body")),*)
+			set tLongString = $e(tLongString,1,$find(tLongString,"</body")-7)
+			
+			// decode &xxxx; and translate some pesky chars
+			set tLongString = $translate(tLongString,$c(160)," ")
+			set tLongString = $zcvt(tLongString,"I","HTML")
+			
+			// ensure strings are separated from tags
+			set tLongString = $replace(tLongString,"<"," <")
+			set tLongString = $replace(tLongString,">","> ")
+			
+			set tLongString = ##class(%iFind.Utils).Highlight(tLongString, ..searchString, ..searchMode, tHighlightTags)
+			
+		} else {
+			set tLongString = $classmethod(..className, ..indexName_"Highlight", pSeed, ..searchString, ..searchMode, tHighlightTags)
+		}
+		
+		write !,"<div id=""docModal"" class=""modal fade"" role=""dialog"">"
+		write !,"  <div class=""modal-dialog"">"
+		write !,"    <div class=""modal-content"">"
+		write !,"      <div class=""modal-header"">"
+		write !,"        <button type=""button"" class=""close"" data-dismiss=""modal"">&times;</button>"
+		write !,"        <h4 class=""modal-title"">"_tTitle_"</h4>"
+		write !,"      </div>"
+		write !,"      <div class=""modal-body"">"
+		write $replace(tLongString," </a>","</a>")
+		write !,"      </div>"
+		write !,"    </div>"
+		write !,"  </div>"
+		write !,"</div>"
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<Method name="ClearHistory">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pQID:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tParent = $g(^CacheTemp.IF.SearchPortal.Query(pQID,"parent"))
+	kill ^CacheTemp.IF.SearchPortal.Query(pQID)
+	quit $s(tParent:..ClearHistory(tParent), 1:$$$OK)
+]]></Implementation>
+</Method>
+</Class>
+</Export>

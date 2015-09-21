@@ -1,0 +1,3 @@
+<cspapp>/nglib
+Demo.SearchPortal.Find.cls
+Demo.SearchPortal.Home.cls
