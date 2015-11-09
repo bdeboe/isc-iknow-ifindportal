@@ -24,8 +24,13 @@
 <Parameter name="IFPORIGINALTEXTFIELD">
 </Parameter>
 
+<Parameter name="IFPENTITYCLICK">
+<Constraint>drill,reset</Constraint>
+<Default>reset</Default>
+</Parameter>
+
 <Parameter name="CSSINCLUDES">
-<Default>nglib/bootstrap/css/bootstrap.min.css,nglib/bootstrap/css/bootstrap-theme.min.css</Default>
+<Default>nglib/bootstrap/css/bootstrap.min.css</Default>
 </Parameter>
 
 <Parameter name="JSINCLUDES">
@@ -197,20 +202,50 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 </vgroup>
 </hgroup>
 
-<html id="htmlResultDoc" OnDrawContent="DrawDocument" />
+<!--html id="htmlResultDoc" OnDrawContent="DrawDocument" /-->
+<html>
+<div id="docModal" class="modal fade" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">x</button>
+<h4 id="docModalTitle" class="modal-title"></h4>
+</div>
+<div id="docModalText" class="modal-body">
+</div>
+<div class="modal-footer" style="text-align: left;">
+<p>Similar records:</p>
+<ul id="docModalSimilar">
+</ul>
+</div>
+</div>
+</div>
+</div>
+</html>
 </page>
 ]]></Data>
 </XData>
 
 <Method name="selectDocument">
-<FormalSpec>id</FormalSpec>
+<FormalSpec>id,launchModal</FormalSpec>
 <Language>javascript</Language>
 <ClientMethod>1</ClientMethod>
 <Implementation><![CDATA[
-	var html = zen('htmlResultDoc');
+	//if (!launchModal) { $('#docModal').modal('hide'); }
+	/*var html = zen('htmlResultDoc');
 	var sc = html.setProperty('seed', id);
 	sc = html.refreshContents(true);
-	$('#docModal').modal();
+	if (launchModal) { $('#docModal').modal('show'); }*/
+	
+	var json = zenPage.GetDocumentDetails(id);
+	console.log(json);
+	$('#docModalTitle').text(json.Title);
+	$('#docModalText').html(json.Text);
+	var sim = $('#docModalSimilar').empty();
+	for (var i = 1; i <= json.SimilarCount; i++) {
+		$('<li />').append($('<a onclick="zenPage.selectDocument(\''+json['Similar'+i+'ID']+'\');" />').text(json['Similar'+i+'Text'])).appendTo(sim);
+	}
+	if (launchModal) { $('#docModal').modal('show'); }
 ]]></Implementation>
 </Method>
 
@@ -388,8 +423,8 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		write !,"<table class=""table table-hover"">"
 		
 		while tResult.%Next() {
-			write !,"<tr style=""cursor:pointer;"" onclick=""zenPage.selectDocument(",tResult.%Get("ID"),");"">"
-			write !,"<td><a href=""zenPage.selectDocument(",tResult.%Get("ID"),");"" target=""_new"">",tResult.%Get("ID"),"</a></td>"
+			write !,"<tr style=""cursor:pointer;"" onclick=""zenPage.selectDocument(",tResult.%Get("ID"),", true);"">"
+			write !,"<td><a href=""#"" onclick""zenPage.selectDocument(",tResult.%Get("ID"),", true);"">",tResult.%Get("ID"),"</a></td>"
 			write !,"<td>"
 			
 			set tTitle = tResult.%Get(..titleField)
@@ -415,7 +450,7 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	} catch (ex) {
 		set tSC = ex.AsStatus()
 	}
-	quit tSC
+	quit ..ErrorHandler(tSC)
 ]]></Implementation>
 </Method>
 
@@ -470,8 +505,8 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		quit:$$$ISERR(tSC)
 		set tResult = tStatement.%Execute()
 		
-		write !,"<div class=""panel panel-default"">"
-		write !,"<div class=""panel-heading""><h4>Filter by "_pSeed_"</h4></div>"
+		write !,"<div class=""panel panel-primary"">"
+		write !,"<div class=""panel-heading""><b>Filter by "_pSeed_"</b></div>"
 		write !,"<table class=""table table-hover"">"
 		//write !,"<tr><th>"_pSeed_"</th><th>Count</th></tr>"
 		
@@ -488,7 +523,7 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	} catch (ex) {
 		set tSC = ex.AsStatus()
 	}
-	quit tSC
+	quit ..ErrorHandler(tSC)
 ]]></Implementation>
 </Method>
 
@@ -507,14 +542,14 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		quit:$$$ISERR(tSC)
 		set tResult = tStatement.%Execute()
 		
-		write !,"<div class=""panel panel-default"">"
-		write !,"<div class=""panel-heading""><h4>Dominant concepts</h4></div>"
+		write !,"<div class=""panel panel-primary"">"
+		write !,"<div class=""panel-heading""><b>Dominant concepts</b></div>"
 		write !,"<table class=""table table-hover"">"
 		//write !,"<tr><th>Entity</th><th>Score</th></tr>"
 		
 		while tResult.%Next() {
 			write !,"<tr>"
-			write !,"<td><a href=""javascript:zenPage.refine('entity:",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",..DrawEntityLink(tResult.%GetData(1)),"</td>"
 			write !,"<td>",tResult.%GetData(2),"</td>"
 			write !,"</tr>"
 		}
@@ -525,7 +560,20 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	} catch (ex) {
 		set tSC = ex.AsStatus()
 	}
-	quit tSC
+	quit ..ErrorHandler(tSC)
+]]></Implementation>
+</Method>
+
+<Method name="DrawEntityLink">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pEntity:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	if ..#IFPENTITYCLICK="drill" {
+		quit "<a href=""javascript:zenPage.refine('entity:"_$zconvert(pEntity,"O","JS")_"');"">"_pEntity_"</a>"
+	} else {
+		quit "<a href=""javascript:zen('txtSearch').setValue('"_$zconvert(pEntity,"O","JS")_"'); zenPage.search('"_$zconvert(pEntity,"O","JS")_"');"">"_pEntity_"</a>"
+	}
 ]]></Implementation>
 </Method>
 
@@ -543,14 +591,14 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		quit:$$$ISERR(tSC)
 		set tResult = tStatement.%Execute(..searchString, ..searchMode)
 		
-		write !,"<div class=""panel panel-default"">"
-		write !,"<div class=""panel-heading""><h4>Similar concepts</h4></div>"
+		write !,"<div class=""panel panel-primary"">"
+		write !,"<div class=""panel-heading""><b>Similar concepts</b></div>"
 		write !,"<table class=""table table-hover"">"
 		//write !,"<tr><th>Entity</th><th>Score</th></tr>"
 		
 		while tResult.%Next() {
 			write !,"<tr>"
-			write !,"<td><a href=""javascript:zenPage.refine('entity:",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",..DrawEntityLink(tResult.%GetData(1)),"</td>"
 			write !,"<td>",tResult.%GetData(2),"</td>"
 			write !,"</tr>"
 		}
@@ -561,7 +609,7 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	} catch (ex) {
 		set tSC = ex.AsStatus()
 	}
-	quit tSC
+	quit ..ErrorHandler(tSC)
 ]]></Implementation>
 </Method>
 
@@ -580,14 +628,14 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		quit:$$$ISERR(tSC)
 		set tResult = tStatement.%Execute(..qid, ..searchString, ..searchMode)
 		
-		write !,"<div class=""panel panel-default"">"
-		write !,"<div class=""panel-heading""><h4>Related concepts</h4></div>"
+		write !,"<div class=""panel panel-primary"">"
+		write !,"<div class=""panel-heading""><b>Related concepts</b></div>"
 		write !,"<table class=""table table-hover"">"
 		//write !,"<tr><th>Entity</th><th>Score</th></tr>"
 		
 		while tResult.%Next() {
 			write !,"<tr>"
-			write !,"<td><a href=""javascript:zenPage.refine('entity:",tResult.%GetData(1),"');"">",tResult.%GetData(1),"</a></td>"
+			write !,"<td>",..DrawEntityLink(tResult.%GetData(1)),"</td>"
 			write !,"<td>",tResult.%GetData(2),"</td>"
 			write !,"</tr>"
 		}
@@ -597,7 +645,7 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	} catch (ex) {
 		set tSC = ex.AsStatus()
 	}
-	quit tSC
+	quit ..ErrorHandler(tSC)
 ]]></Implementation>
 </Method>
 
@@ -746,6 +794,18 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 ]]></Implementation>
 </Method>
 
+<Method name="ErrorHandler">
+<FormalSpec>pSC:%Status</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	if $$$ISERR(pSC) {
+		set tMessage = $zconvert($system.Status.GetErrorText(pSC),"O","JS")
+		&js<console.log('ERROR: #(tMessage)#')>
+	}
+	quit pSC
+]]></Implementation>
+</Method>
+
 <Method name="DrawDocument">
 <FormalSpec>pSeed:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -756,7 +816,7 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		
 		set tHighlightTags = "<a class=""searchMatch"" name=""firsthit"">,<a class=""searchMatchNeg"" name=""firsthit"">"
 		set tObj = $classmethod(..className, "%OpenId", pSeed)
-		set tTitle = $property(tObj, ..titleField)
+		set tTitle = $s(..titleField="ID":$method(tObj,"%Id"), 1:$property(tObj, ..titleField))
 		
 		if (..originalTextField'="") {
 			set tLongString = $property(tObj, ..originalTextField)
@@ -789,6 +849,29 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		write !,"      <div class=""modal-body"">"
 		write $replace(tLongString," </a>","</a>")
 		write !,"      </div>"
+		write !,"      <div class=""modal-footer"" style=""text-align: left;"">"
+		write !,"		<p>Similar records:</p>"
+		write !,"        <ul>"
+		
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare("SELECT TOP 5 RecordID FROM Demo_SearchPortal.FindSimilar(?,?,?)")
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute(..tableName, ..indexName, pSeed)
+		while tResult.%Next() {
+			set tOtherRecordID = tResult.%GetData(1)
+			set tOtherRecord = $classmethod(..className, "%OpenId", tOtherRecordID)
+			if (..titleField'="ID") {
+				set tString = $property(tOtherRecord, ..titleField)
+			} elseif (..originalTextField'="") {
+				set tString = $e($property(tOtherRecord,..originalTextField), 1, 40)_"..."
+			} else {
+				set tString = $e($classmethod(..className, ..indexName_"Highlight", tOtherRecordID, ..searchString, ..searchMode, tHighlightTags), 1, 40)_"..."
+			}
+			write !,"       <li><a href=""#"" onclick=""zenPage.selectDocument('"_tOtherRecordID_"', false);"">"_tString_"</a></li>"
+		}
+		
+		write !,"       </ul>"
+		write !,"      </div>"
 		write !,"    </div>"
 		write !,"  </div>"
 		write !,"</div>"
@@ -796,7 +879,77 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	} catch (ex) {
 		set tSC = ex.AsStatus()
 	}
-	quit tSC
+	quit ..ErrorHandler(tSC)
+]]></Implementation>
+</Method>
+
+<Method name="GetDocumentDetails">
+<FormalSpec>pID:%String</FormalSpec>
+<ReturnType>%ZEN.proxyObject</ReturnType>
+<ZenMethod>1</ZenMethod>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try {
+		set tProxy = ##class(%ZEN.proxyObject).%New()
+		quit:'pID
+		
+		set tHighlightTags = "<a class=""searchMatch"" name=""firsthit"">,<a class=""searchMatchNeg"" name=""firsthit"">"
+		set tObj = $classmethod(..className, "%OpenId", pID)
+		set tProxy.Title = $s(..titleField="ID":$method(tObj,"%Id"), 1:$property(tObj, ..titleField))
+		
+		if (..originalTextField'="") {
+			set tLongString = $property(tObj, ..originalTextField)
+		
+			// now isolate <body> contents
+			set tLongString = $e(tLongString,$find(tLongString,">",$find(tLongString,"<body")),*)
+			set tLongString = $e(tLongString,1,$find(tLongString,"</body")-7)
+			
+			// decode &xxxx; and translate some pesky chars
+			set tLongString = $translate(tLongString,$c(160)," ")
+			set tLongString = $zcvt(tLongString,"I","HTML")
+			
+			// ensure strings are separated from tags
+			set tLongString = $replace(tLongString,"<"," <")
+			set tLongString = $replace(tLongString,">","> ")
+			
+			set tLongString = ##class(%iFind.Utils).Highlight(tLongString, ..searchString, ..searchMode, tHighlightTags)
+			
+		} else {
+			set tLongString = $classmethod(..className, ..indexName_"Highlight", pID, ..searchString, ..searchMode, tHighlightTags)
+		}
+		set tProxy.Text = $replace(tLongString," </a>","</a>")
+		
+		//set tProxy.Similar = ##class(%ListOfObjects).%New()
+		set tStatement = ##class(%SQL.Statement).%New()
+		set tSC = tStatement.%Prepare("SELECT TOP 5 RecordID FROM Demo_SearchPortal.FindSimilar(?,?,?)")
+		quit:$$$ISERR(tSC)
+		set tResult = tStatement.%Execute(..tableName, ..indexName, pID), tCount=0
+		while tResult.%Next() {
+			set tOtherRecordID = tResult.%GetData(1)
+			set tOtherRecord = $classmethod(..className, "%OpenId", tOtherRecordID)
+			if (..titleField'="ID") {
+				set tString = $property(tOtherRecord, ..titleField)
+			} elseif (..originalTextField'="") {
+				set tString = $e($property(tOtherRecord,..originalTextField), 1, 40)_"..."
+			} else {
+				set tString = $e($classmethod(..className, ..indexName_"Highlight", tOtherRecordID, ..searchString, ..searchMode, tHighlightTags), 1, 40)_"..."
+			}
+			set tString = $method(tOtherRecord,"%Id")_": "_tString
+			/*set tProxy2 = ##class(%ZEN.proxyObject).%New()
+			set tProxy2.ID = tOtherRecordID
+			set tProxy2.Title = tString
+			do tProxy.Similar.Insert(tProxy2)*/
+			// ridiculous alternative as ZenMethods don't allow returning nested JSON:
+			set $property(tProxy, "Similar"_$i(tCount)_"ID") = tOtherRecordID
+			set $property(tProxy, "Similar"_tCount_"Text") = tString
+		}
+		set tProxy.SimilarCount = tCount
+		
+	} catch (ex) {
+		set tSC = ex.AsStatus()
+	}
+	do ..ErrorHandler(tSC)
+	quit tProxy
 ]]></Implementation>
 </Method>
 
