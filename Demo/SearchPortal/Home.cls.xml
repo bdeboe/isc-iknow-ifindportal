@@ -30,11 +30,11 @@
 </Parameter>
 
 <Parameter name="CSSINCLUDES">
-<Default>nglib/bootstrap/css/bootstrap.min.css</Default>
+<Default>bootstrap-3-3-5/dist/css/bootstrap.min.css</Default>
 </Parameter>
 
 <Parameter name="JSINCLUDES">
-<Default>nglib/jquery-1.9.0.min.js,nglib/bootstrap/js/bootstrap.min.js</Default>
+<Default>jquery-2.0.3.min.js,bootstrap-3-3-5/dist/js/bootstrap.min.js</Default>
 </Parameter>
 
 <Property name="tableName">
@@ -208,7 +208,7 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 <div class="modal-dialog">
 <div class="modal-content">
 <div class="modal-header">
-<button type="button" class="close" data-dismiss="modal">x</button>
+<span class="glyphicon glyphicon-remove close" data-dismiss="modal"> </span>
 <h4 id="docModalTitle" class="modal-title"></h4>
 </div>
 <div id="docModalText" class="modal-body">
