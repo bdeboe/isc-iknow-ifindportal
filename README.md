@@ -7,3 +7,5 @@ Note that the dominant, similar and related concepts widgets illustrate iKnow's 
 ## Setting up
 
 There is no specific setup required. You can simply point the UI to a table with an iFind Analytic index by adding ?t=Your_Table.Name to the URL, or by subclassing Demo.SearchPortal.Home and overriding the IFP* class parameters.
+
+More details on how to set up and use this app can be found in this article on the InterSystems Developer Community: https://community.intersystems.com/post/iknow-demo-apps-part-5-ifind-search-portal
