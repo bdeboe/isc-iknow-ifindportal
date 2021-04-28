@@ -1,22 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
-<Class name="Demo.SearchPortal.Utils">
-<TimeCreated>63838,48100.0186</TimeCreated>
+Class Demo.SearchPortal.Utils
+{
 
-<Query name="FindSimilar">
-<Type>%Query</Type>
-<FormalSpec>pTableName:%String,pIndexName:%String,pRecordID:%CacheString</FormalSpec>
-<SqlName>FindSimilar</SqlName>
-<SqlProc>1</SqlProc>
-<Parameter name="ROWSPEC" value="RecordId:%CacheString,Score:%Numeric,Count:%Integer"/>
-</Query>
+Query FindSimilar(pTableName As %String, pIndexName As %String, pRecordID As %CacheString) As %Query(ROWSPEC = "RecordId:%CacheString,Score:%Numeric,Count:%Integer") [ SqlName = FindSimilar, SqlProc ]
+{
+}
 
-<Method name="FindSimilarExecute">
-<Internal>1</Internal>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&qHandle:%Binary,pTableName:%String,pIndexName:%String,pRecordID:%CacheString]]></FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+ClassMethod FindSimilarExecute(ByRef qHandle As %Binary, pTableName As %String, pIndexName As %String, pRecordID As %CacheString) As %Status [ Internal ]
+{
 	set tSC = $$$OK
 	try {
 random	set tRID = $random(99999)
@@ -126,28 +116,16 @@ random	set tRID = $random(99999)
 	}
 	kill ^||%IF.TempAgg, ^||%IF.TempSorted
 	quit tSC
-]]></Implementation>
-</Method>
+}
 
-<Method name="FindSimilarClose">
-<Internal>1</Internal>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&qHandle:%Binary]]></FormalSpec>
-<PlaceAfter>FindWordsExecute</PlaceAfter>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+ClassMethod FindSimilarClose(ByRef qHandle As %Binary) As %Status [ Internal, PlaceAfter = FindWordsExecute ]
+{
 	kill ^||%IF.FindSimilar(+$lg(qHandle,1))
 	quit $$$OK
-]]></Implementation>
-</Method>
+}
 
-<Method name="FindSimilarFetch">
-<Internal>1</Internal>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[&qHandle:%Binary,&Row:%List,&AtEnd:%Integer=0]]></FormalSpec>
-<PlaceAfter>FindWordsExecute</PlaceAfter>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+ClassMethod FindSimilarFetch(ByRef qHandle As %Binary, ByRef Row As %List, ByRef AtEnd As %Integer = 0) As %Status [ Internal, PlaceAfter = FindWordsExecute ]
+{
 	set tRID = +$lg(qHandle,1), tPrevious=$lg(qHandle,2)
 	set tNext = $order(^||%IF.FindSimilar(tRID, tPrevious),1,tData)
 	if tNext="" {
@@ -157,7 +135,6 @@ random	set tRID = $random(99999)
 		set Row = tData
 	}
 	quit $$$OK
-]]></Implementation>
-</Method>
-</Class>
-</Export>
+}
+
+}

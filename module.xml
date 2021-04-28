@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+  <Document name="iFindPortal.ZPM">
+    <Module>
+      <Name>iFindPortal</Name>
+      <Version>1.1.0</Version>
+      <Description>Demo application for InterSystems IRIS SQL Search (aka iFind) features</Description>
+      <Packaging>module</Packaging>
+      <SourcesRoot>src</SourcesRoot>
+      <Resource Name="Demo.PKG"/>
+    </Module>
+  </Document>
+</Export>

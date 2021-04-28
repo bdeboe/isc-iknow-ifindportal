@@ -1,143 +1,60 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
-<Class name="Demo.SearchPortal.Home">
-<IncludeCode>%IFInclude</IncludeCode>
-<Super>%ZEN.Component.page</Super>
-<TimeCreated>63816,42293.579451</TimeCreated>
+Include %IFInclude
 
-<Parameter name="IFPTABLE">
-<Default>Demo_Hotels.Review</Default>
-</Parameter>
+Class Demo.SearchPortal.Home Extends %ZEN.Component.page
+{
 
-<Parameter name="IFPINDEX">
-</Parameter>
+Parameter IFPTABLE = "Demo_Hotels.Review";
 
-<Parameter name="IFPFILTERFIELDS">
-</Parameter>
+Parameter IFPINDEX;
 
-<Parameter name="IFPORDERFIELD">
-</Parameter>
+Parameter IFPFILTERFIELDS;
 
-<Parameter name="IFPTITLEFIELD">
-</Parameter>
+Parameter IFPORDERFIELD;
 
-<Parameter name="IFPORIGINALTEXTFIELD">
-</Parameter>
+Parameter IFPTITLEFIELD;
 
-<Parameter name="IFPENTITYCLICK">
-<Constraint>drill,reset</Constraint>
-<Default>reset</Default>
-</Parameter>
+Parameter IFPORIGINALTEXTFIELD;
 
-<Parameter name="CSSINCLUDES">
-<Default>bootstrap-3-3-5/dist/css/bootstrap.min.css</Default>
-</Parameter>
+Parameter IFPENTITYCLICK [ Constraint = "drill,reset" ] = "reset";
 
-<Parameter name="JSINCLUDES">
-<Default>jquery-2.0.3.min.js,bootstrap-3-3-5/dist/js/bootstrap.min.js</Default>
-</Parameter>
+Parameter CSSINCLUDES = "bootstrap-3-3-5/dist/css/bootstrap.min.css";
 
-<Property name="tableName">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>..#IFPTABLE</InitialExpression>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="t"/>
-</Property>
+Parameter JSINCLUDES = "jquery-2.0.3.min.js,bootstrap-3-3-5/dist/js/bootstrap.min.js";
 
-<Property name="className">
-<Type>%ZEN.Datatype.string</Type>
-<Private>1</Private>
-</Property>
+Property tableName As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "t") [ InitialExpression = {..#IFPTABLE} ];
 
-<Property name="mappingPrefix">
-<Type>%ZEN.Datatype.string</Type>
-<Private>1</Private>
-</Property>
+Property className As %ZEN.Datatype.string [ Private ];
 
-<Property name="hasPrivateStorage">
-<Type>%ZEN.Datatype.boolean</Type>
-<Private>1</Private>
-</Property>
+Property mappingPrefix As %ZEN.Datatype.string [ Private ];
 
-<Property name="indexName">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>..#IFPINDEX</InitialExpression>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="i"/>
-</Property>
+Property hasPrivateStorage As %ZEN.Datatype.boolean [ Private ];
 
-<Property name="metadataColumns">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>..#IFPFILTERFIELDS</InitialExpression>
-<Parameter name="MAXLEN" value="2000"/>
-<Parameter name="ZENURL" value="mf"/>
-</Property>
+Property indexName As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "i") [ InitialExpression = {..#IFPINDEX} ];
 
-<Property name="orderField">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>..#IFPORDERFIELD</InitialExpression>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="of"/>
-</Property>
+Property metadataColumns As %ZEN.Datatype.string(MAXLEN = 2000, ZENURL = "mf") [ InitialExpression = {..#IFPFILTERFIELDS} ];
 
-<Property name="titleField">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>..#IFPTITLEFIELD</InitialExpression>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="tf"/>
-</Property>
+Property orderField As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "of") [ InitialExpression = {..#IFPORDERFIELD} ];
 
-<Property name="originalTextField">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>..#IFPORIGINALTEXTFIELD</InitialExpression>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="otf"/>
-</Property>
+Property titleField As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "tf") [ InitialExpression = {..#IFPTITLEFIELD} ];
 
-<Property name="metadataParsed">
-<Type>%ZEN.Datatype.string</Type>
-<Private>1</Private>
-<Parameter name="MAXLEN" value="2000"/>
-</Property>
+Property originalTextField As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "otf") [ InitialExpression = {..#IFPORIGINALTEXTFIELD} ];
 
-<Property name="metadata1Index">
-<Type>%ZEN.Datatype.string</Type>
-<Private>1</Private>
-<Parameter name="MAXLEN" value="256"/>
-</Property>
+Property metadataParsed As %ZEN.Datatype.string(MAXLEN = 2000) [ Private ];
 
-<Property name="searchString">
-<Type>%ZEN.Datatype.string</Type>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="q"/>
-</Property>
+Property metadata1Index As %ZEN.Datatype.string(MAXLEN = 256) [ Private ];
 
-<Property name="searchMode">
-<Type>%ZEN.Datatype.string</Type>
-<InitialExpression>$$$IFSEARCHNORMAL</InitialExpression>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="m"/>
-</Property>
+Property searchString As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "q");
 
-<Property name="searchMD1">
-<Type>%ZEN.Datatype.string</Type>
-<Parameter name="MAXLEN" value="256"/>
-<Parameter name="ZENURL" value="j"/>
-</Property>
+Property searchMode As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "m") [ InitialExpression = {$$$IFSEARCHNORMAL} ];
 
-<Property name="qid">
-<Type>%ZEN.Datatype.integer</Type>
-<Parameter name="ZENURL" value="qid"/>
-</Property>
+Property searchMD1 As %ZEN.Datatype.string(MAXLEN = 256, ZENURL = "j");
 
-<Property name="criteria">
-<Type>%ZEN.Datatype.string</Type>
-<Parameter name="MAXLEN"/>
-<Parameter name="ZENURL" value="c"/>
-</Property>
+Property qid As %ZEN.Datatype.integer(ZENURL = "qid");
 
-<XData name="Style">
-<Data><![CDATA[
+Property criteria As %ZEN.Datatype.string(MAXLEN = "", ZENURL = "c");
+
+XData Style
+{
 <style type="text/css">
 body {
 	padding: 20px;
@@ -157,12 +74,10 @@ body {
 	color: #5cb85c;
 }
 </style>
-]]></Data>
-</XData>
+}
 
-<XData name="Contents">
-<XMLNamespace>http://www.intersystems.com/zen</XMLNamespace>
-<Data><![CDATA[
+XData Contents [ XMLNamespace = "http://www.intersystems.com/zen" ]
+{
 <page title="iFind Search Portal" width="100%">
 <hgroup cellVAlign="top" width="100%">
 <vgroup width="70%">
@@ -223,14 +138,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 </div>
 </html>
 </page>
-]]></Data>
-</XData>
+}
 
-<Method name="selectDocument">
-<FormalSpec>id,launchModal</FormalSpec>
-<Language>javascript</Language>
-<ClientMethod>1</ClientMethod>
-<Implementation><![CDATA[
+ClientMethod selectDocument(id, launchModal) [ Language = javascript ]
+{
 	//if (!launchModal) { $('#docModal').modal('hide'); }
 	/*var html = zen('htmlResultDoc');
 	var sc = html.setProperty('seed', id);
@@ -246,48 +157,33 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		$('<li />').append($('<a onclick="zenPage.selectDocument(\''+json['Similar'+i+'ID']+'\');" />').text(json['Similar'+i+'Text'])).appendTo(sim);
 	}
 	if (launchModal) { $('#docModal').modal('show'); }
-]]></Implementation>
-</Method>
+}
 
-<Method name="search">
-<FormalSpec>string,md1</FormalSpec>
-<Language>javascript</Language>
-<ClientMethod>1</ClientMethod>
-<Implementation><![CDATA[
+ClientMethod search(string, md1) [ Language = javascript ]
+{
 	// first ensure we have our saved results
 	sc = zenPage.DoSearch(string, md1);
 	zenPage.refreshAll();
-]]></Implementation>
-</Method>
+}
 
-<Method name="refine">
-<FormalSpec>criteria</FormalSpec>
-<Language>javascript</Language>
-<ClientMethod>1</ClientMethod>
-<Implementation><![CDATA[
+ClientMethod refine(criteria) [ Language = javascript ]
+{
 	var sc = zenPage.RefineSearch(criteria);
 	zenPage.refreshAll();
-]]></Implementation>
-</Method>
+}
 
-<Method name="refreshAll">
-<Language>javascript</Language>
-<ClientMethod>1</ClientMethod>
-<Implementation><![CDATA[
+ClientMethod refreshAll() [ Language = javascript ]
+{
 	// asynchronously refresh relevant panels
 	zen('htmlResults').refreshContents();
 	zen('htmlFilterFacet').refreshContents();
 	zen('htmlDominantTerms').refreshContents();
 	zen('htmlSimilarTerms').refreshContents();
 	zen('htmlRelatedTerms').refreshContents();
-]]></Implementation>
-</Method>
+}
 
-<Method name="RefineSearch">
-<FormalSpec>pNewCriteria:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<ZenMethod>1</ZenMethod>
-<Implementation><![CDATA[
+Method RefineSearch(pNewCriteria As %String) As %Status [ ZenMethod ]
+{
 	set tSC = $$$OK
 	try {
 		set ..criteria = ..criteria _$s(..criteria="":"",1:",")_pNewCriteria
@@ -331,14 +227,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit tSC
-]]></Implementation>
-</Method>
+}
 
-<Method name="DoSearch">
-<FormalSpec>pSearch:%String,pMD1:%String=""</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<ZenMethod>1</ZenMethod>
-<Implementation><![CDATA[
+Method DoSearch(pSearch As %String, pMD1 As %String = "") As %Status [ ZenMethod ]
+{
 	set tSC = $$$OK
 	try {
 		if (..searchString'=pSearch) && ..qid {
@@ -379,13 +271,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit tSC
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawResults">
-<FormalSpec>pSeed:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method DrawResults(pSeed As %String) As %Status
+{
 	set tSC = $$$OK
 	try {
 		
@@ -451,14 +340,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit ..ErrorHandler(tSC)
-]]></Implementation>
-</Method>
+}
 
-<Method name="InputTerm">
-<FormalSpec>pBase:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<ZenMethod>1</ZenMethod>
-<Implementation><![CDATA[
+Method InputTerm(pBase As %String) As %String [ ZenMethod ]
+{
 	set tFindPrefix = $s(..hasPrivateStorage:..mappingPrefix, 1:"%iFind.")
 	set tResult = ##class(%SQL.Statement).%ExecDirect(,"SELECT TOP 12 Entity FROM "_tFindPrefix_"FindEntities('"_pBase_"*', '"_..searchMode_"')") // WHERE EntityId IN (SELECT EntityId FROM poc_cIndexDocument.cIndexDocument_IdxIFind_EntSpreadRec)")
 	set tResultString = ""
@@ -466,37 +351,27 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tResultString = tResultString_","_tResult.%GetData(1)
 	}
 	quit tResultString
-]]></Implementation>
-</Method>
+}
 
-<Method name="inputTermClient">
-<FormalSpec>text</FormalSpec>
-<Language>javascript</Language>
-<ClientMethod>1</ClientMethod>
-<Implementation><![CDATA[
+ClientMethod inputTermClient(text) [ Language = javascript ]
+{
 	// quit if input string is too short
 	if ((text == null) || (text.length < 2))
 		return '';
 		
 	return zenPage.InputTerm(text);
-]]></Implementation>
-</Method>
+}
 
-<Method name="onTermKeyUp">
-<Language>javascript</Language>
-<ClientMethod>1</ClientMethod>
-<Implementation><![CDATA[
+ClientMethod onTermKeyUp() [ Language = javascript ]
+{
 	if (zenEvent && ((zenEvent.keyCode==13) || (zenEvent.which==13))) {
 		zenPage.search(zen('txtSearch').getValue());
 	}
 	return true;
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawFacet">
-<FormalSpec>pSeed:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method DrawFacet(pSeed As %String) As %Status
+{
 	set tSC = $$$OK
 	try {
 		set tSQL = "SELECT %EXACT("_pSeed_"), COUNT(*) FROM "_..tableName_" WHERE %ID %FIND Demo_SearchPortal.Find("_..qid_") GROUP BY %EXACT("_pSeed_")"
@@ -524,13 +399,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit ..ErrorHandler(tSC)
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawDominantTerms">
-<FormalSpec>pSeed:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method DrawDominantTerms(pSeed As %String) As %Status
+{
 	set tSC = $$$OK
 	try {
 		// take TOP 30 as the limit on StrippedEntityId=EntityId may halve (or worse) the list
@@ -561,26 +433,19 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit ..ErrorHandler(tSC)
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawEntityLink">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>pEntity:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
+ClassMethod DrawEntityLink(pEntity As %String) As %String
+{
 	if ..#IFPENTITYCLICK="drill" {
 		quit "<a href=""javascript:zenPage.refine('entity:"_$zconvert(pEntity,"O","JS")_"');"">"_pEntity_"</a>"
 	} else {
 		quit "<a href=""javascript:zen('txtSearch').setValue('"_$zconvert(pEntity,"O","JS")_"'); zenPage.search('"_$zconvert(pEntity,"O","JS")_"');"">"_pEntity_"</a>"
 	}
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawSimilarTerms">
-<FormalSpec>pSeed:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method DrawSimilarTerms(pSeed As %String) As %Status
+{
 	set tSC = $$$OK
 	try {
 		set tFindPrefix = $s(..hasPrivateStorage:..mappingPrefix, 1:"%iFind.")
@@ -610,13 +475,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit ..ErrorHandler(tSC)
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawRelatedTerms">
-<FormalSpec>pSeed:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method DrawRelatedTerms(pSeed As %String) As %Status
+{
 	set tSC = $$$OK
 	try {
 		set tFindPrefix = $s(..hasPrivateStorage:..mappingPrefix, 1:"%iFind.")
@@ -646,12 +508,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit ..ErrorHandler(tSC)
-]]></Implementation>
-</Method>
+}
 
-<Method name="%OnAfterCreatePage">
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method %OnAfterCreatePage() As %Status
+{
 	set tSC = ..InitializeTable()
 	quit:$$$ISERR(tSC) tSC
 	
@@ -660,12 +520,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		do ..DoSearch(..searchString, ..searchMD1)
 	}
 	quit $$$OK
-]]></Implementation>
-</Method>
+}
 
-<Method name="InitializeTable">
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method InitializeTable() As %Status
+{
 	set tSC = $$$OK
 	try {
 		// first find table
@@ -791,25 +649,19 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit tSC
-]]></Implementation>
-</Method>
+}
 
-<Method name="ErrorHandler">
-<FormalSpec>pSC:%Status</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method ErrorHandler(pSC As %Status) As %Status
+{
 	if $$$ISERR(pSC) {
 		set tMessage = $zconvert($system.Status.GetErrorText(pSC),"O","JS")
 		&js<console.log('ERROR: #(tMessage)#')>
 	}
 	quit pSC
-]]></Implementation>
-</Method>
+}
 
-<Method name="DrawDocument">
-<FormalSpec>pSeed:%String</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+Method DrawDocument(pSeed As %String) As %Status
+{
 	set tSC = $$$OK
 	try {
 		quit:'pSeed
@@ -880,14 +732,10 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 		set tSC = ex.AsStatus()
 	}
 	quit ..ErrorHandler(tSC)
-]]></Implementation>
-</Method>
+}
 
-<Method name="GetDocumentDetails">
-<FormalSpec>pID:%String</FormalSpec>
-<ReturnType>%ZEN.proxyObject</ReturnType>
-<ZenMethod>1</ZenMethod>
-<Implementation><![CDATA[
+Method GetDocumentDetails(pID As %String) As %ZEN.proxyObject [ ZenMethod ]
+{
 	set tSC = $$$OK
 	try {
 		set tProxy = ##class(%ZEN.proxyObject).%New()
@@ -950,18 +798,13 @@ onclick="zenPage.search(zen('txtSearch').getValue(),zen('selMD1').getValue());" 
 	}
 	do ..ErrorHandler(tSC)
 	quit tProxy
-]]></Implementation>
-</Method>
+}
 
-<Method name="ClearHistory">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>pQID:%Integer</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
+ClassMethod ClearHistory(pQID As %Integer) As %Status
+{
 	set tParent = $g(^CacheTemp.IF.SearchPortal.Query(pQID,"parent"))
 	kill ^CacheTemp.IF.SearchPortal.Query(pQID)
 	quit $s(tParent:..ClearHistory(tParent), 1:$$$OK)
-]]></Implementation>
-</Method>
-</Class>
-</Export>
+}
+
+}
