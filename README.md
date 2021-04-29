@@ -23,6 +23,14 @@ Coming soon!
 zpm install iFindPortal
 ```
 
+### Using Docker
+
+download the sources and run the following command on the command-line:
+
+```sh
+docker-compose up -d
+```
+
 ## Use
 
 There is no specific setup required. You can simply point the UI to a table with an iFind Analytic index by adding `?t=Your_Table.Name` to the URL. For example: [http://localhost:52773/csp/USER/Demo.SearchPortal.Home.zen?t=My_Package.TheTable] 
