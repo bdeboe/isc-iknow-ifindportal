@@ -1,0 +1,14 @@
+version: '3.6'
+services:
+    iris:
+        build: .
+        image: iristext:latest
+        restart: always
+        hostname: 'iris'
+        init: true
+        expose:
+            - '1972'
+            - '52773'
+        ports:
+            - '9091:1972'
+            - '9092:52773'
